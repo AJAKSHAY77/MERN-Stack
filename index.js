@@ -1,35 +1,50 @@
-// // import express from "express"
 
-// const express = require("express")
+import http from "http"
+import fs from "fs"
 
-// const server = express();
-// const port = 4000
+// const index = fs.readFileSync("index.html", "utf-8");
+const data = JSON.parse(fs.readFileSync("data.json", "utf-8"));
 
-// console.log("akshay jain");
-// console.log("aditya jain");
+import express from "express";
+import morgan from "morgan";
+import { log } from "console";
+import bodyparcer from "body-parser"
 
-// console.log("jai hind");
 
-// server.listen(port)
+const server = express()
 
-const http = require("http");
-const fs = require("fs");
+// server.use(morgan("default"))
+server.use(express.json())
 
-const index = fs.readFileSync("index.html", "utf-8");
-const data = fs.readFileSync("data.json", "utf-8");
+// // server.use(express.static("public"))
 
-const server = http.createServer((req, res) => {
-  console.log("sever started");
+// server.use((req,res,next) => {
+//     console.log(req.method);
+//     next()
+// })
+// api or endpoint
+server.get("/", (req, res) => {
+    console.log("server started");
+    res.status(200).send(data.products[0]);   
+})
 
-  if(req.url.startsWith("/")){
-      res.setHeader("content-type", "application/json");
-     
-    res.end(index);
-  }
-   if(req.url.startsWith("/demo")) {
-    res.setHeader("content-type", "text/html");
-    res.end(data);
-  } 
-});
 
-server.listen(5000);
+server.post("/products", (req, res) => {
+    console.log(req.body);
+    
+        res.json({type:'post'})
+})
+
+
+server.delete("/", (req,res) => {
+    res.status(200).send("<h1>akshay</h1>");   
+})
+server.put("/", (req,res) => {
+    res.status(200).send("<h1>akshay</h1>");   
+})
+server.delete("/", (req,res) => {
+    res.status(200).send("<h1>akshay</h1>");   
+})
+
+server.listen(5000)
+
