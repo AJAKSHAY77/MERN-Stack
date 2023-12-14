@@ -1,50 +1,74 @@
 
-import http from "http"
 import fs from "fs"
+import express from"express"
 
-// const index = fs.readFileSync("index.html", "utf-8");
-const data = JSON.parse(fs.readFileSync("data.json", "utf-8"));
 
-import express from "express";
-import morgan from "morgan";
-import { log } from "console";
-import bodyparcer from "body-parser"
 
+const data = JSON.parse(fs.readFileSync("data.json", "utf-8"))
+const products = data.products;
 
 const server = express()
-
-// server.use(morgan("default"))
+//built in middleware which read only body of req in json format
+//body parcer
 server.use(express.json())
 
-// // server.use(express.static("public"))
+// server.use(urlencoded())
+server.use(express.static("public"))
 
-// server.use((req,res,next) => {
-//     console.log(req.method);
-//     next()
-// })
-// api or endpoint
-server.get("/", (req, res) => {
-    console.log("server started");
-    res.status(200).send(data.products[0]);   
-})
+// logger midleware
 
+const auth = (req, res, next) => {
+  console.log(
+    req.params,
+    req.ip,
+    req.hostname,
+    req.get("user-content"),
+    new Date()
+  );
+  next();
+};
 
-server.post("/products", (req, res) => {
-    console.log(req.body);
+const auth2 = (req,res,next) => {
+    // console.log(req.query);
     
-        res.json({type:'post'})
+    if (req.body.password=="123") {
+        next()
+    }
+    else {
+        res.send(401)
+    }
+}
+
+// application middleware !
+
+// server.use(auth);
+// server.use(auth2)
+
+
+// making apis or paths ! 
+
+
+server.get("/demo",auth,(req, res) => {
+    
+    res.send("<h1>jai hind</h1>")
+
+    // res.send(products)
+
+    // res.sendStatus(202).send("hello")
+
+    // res.send("hello")
 })
 
 
-server.delete("/", (req,res) => {
-    res.status(200).send("<h1>akshay</h1>");   
-})
-server.put("/", (req,res) => {
-    res.status(200).send("<h1>akshay</h1>");   
-})
-server.delete("/", (req,res) => {
-    res.status(200).send("<h1>akshay</h1>");   
+server.post("/", auth2, (req, res) => {
+    
+    res.send("success")
 })
 
-server.listen(5000)
+
+
+
+server.listen(5000, () => {
+    console.log("server started");
+})
 
