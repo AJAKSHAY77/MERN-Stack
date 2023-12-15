@@ -1,18 +1,23 @@
+import { Product } from "../Models/product.js";
 
-import fs from "fs"
+// const data = JSON.parse(fs.readFileSync("data.json", "utf-8"));
+// const products = data.products;
 
-const data = JSON.parse(fs.readFileSync("data.json", "utf-8"));
-const products = data.products;
-
-export const createPrduct = (req, res) => {
-  console.log(req.body);
-  products.push(req.body);
+export const createPrduct = async (req, res) => {
+  const product = new Product(req.body);
+try {
+    const savedProduct = await product.save();
+    console.log(savedProduct);
+  } catch (err) {
+    console.log(err);
+  }
 
   res.json(req.body);
 };
 
-export const getapi = (req, res) => {
-  console.log(req.params);
+export const getapi = async (req, res) => {
+  // console.log(req.params);
+  const products = await Product.find({price:{$gt:9000}});
   res.json(products);
 };
 
